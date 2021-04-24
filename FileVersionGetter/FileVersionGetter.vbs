@@ -1,64 +1,75 @@
-'*************************************************
-'* ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ãƒãƒ¼ã‚¸ãƒ§ãƒ³ç¢ºèªã‚¹ã‚¯ãƒªãƒ—ãƒˆ
-'* softwareList.txtã‚’å‚ç…§ã—ã¦
-'* ç«¯æœ«ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚ŒãŸã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å–å¾—ã—ã¾ã™ã€‚
-'*************************************************
-
+'*******************************************************************************
+' FileVersionGetter.vbs
+'*******************************************************************************
 Option Explicit
 
+' ’è”éŒ¾
+Const InputFilePath       = "./"
+Const InputFileName       = "SoftwareList"
+Const InputFileExtension  = ".txt"
+Const OutputFilePath      = "./"
+Const OutputFileName      = "SoftwareVersion"
+Const OutputFileExtension = ".txt"
+
+' ƒtƒ@ƒCƒ‹ƒVƒXƒeƒ€ƒIƒuƒWƒFƒNƒg
 Dim fso
-set fso = CreateObject("Scripting.FileSystemObject")
+Set fso = CreateObject("Scripting.FileSystemObject")
 
+' ƒCƒ“ƒvƒbƒgƒtƒ@ƒCƒ‹
 Dim inputFile
-set inputFile = fso.OpenTextFile("./SoftwareList.txt")
+Set inputFile = fso.OpenTextFile(InputFilePath & _
+                                 InputFileName & _
+                                 InputFileExtension)
 
-Dim outputFileName
-outputFileName = "./SoftwareVersion" & Replace(Replace(Replace(Now(),"/",""),":","")," ","")& ".txt"
+' ƒAƒEƒgƒvƒbƒgƒtƒ@ƒCƒ‹
 Dim outputFile
-Set outputFile = fso.CreateObject(outputFileName)
+Set outputFile = fso.CreateTextFile(OutputFilePath & _
+                                    OutputFileName & _
+                                    "_" & Replace(Replace(Replace(Now(),"/",""),":","")," ","") & _
+                                    OutputFileExtension)
 
-'ãƒ•ã‚¡ã‚¤ãƒ«ã«ç¾åœ¨ã®æ—¥ä»˜ã‚’æ›¸ãè¾¼ã‚€
-outputFile.writeLine(now)
+'ƒtƒ@ƒCƒ‹‚ÉŒ»Ý‚Ì“ú•t‚ð‘‚«ž‚Þ
+outputFile.WriteLine(Now)
 
-do until inputFile.AtEndOfStream
-    dim lineStr
-    dim aryStr
-    lineStr = inputFile.readLine
-    aryStr = Split(lineStr,",")
+Do Until inputFile.AtEndOfStream
+    'ƒtƒ@ƒCƒ‹‚©‚ç“Ç‚ÝŽæ‚è
+    Dim strAry
+    strAry = Split(inputFile.ReadLine,",")
 
-    'ãƒ¬ã‚¸ã‚¹ãƒˆãƒªã‹ã‚‰ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—ã—ã¾ã™ã€‚
-    dim install_path
-    install_path = getInstallPath(aryStr(0), aryStr(1))
+    'ƒŒƒWƒXƒgƒŠ‚©‚çƒCƒ“ƒXƒg[ƒ‹ƒpƒX‚ðŽæ“¾‚µ‚Ü‚·B
+    Dim installPath
+    installPath = GetInstallPath(strAry(0), strAry(1))
 
-    dim ret
-    if fso.FileExists(install_path) = true then
-        ret = fso.getFileVersion(install_path)
-    end if
+    Dim ret
+    If fso.FileExists(installPath) = true Then
+        ret = fso.GetFileVersion(installPath)
+    End If
 
-    if len(trim(install_path)) > 0 then
-        outputFile.writeLine(install_path)
-        outputFile.writeLine(ret)
-    end if
-loop
+    If Len(Trim(installPath)) > 0 Then
+        outputFile.WriteLine(installPath)
+        outputFile.WriteLine(ret)
+    End If
+Loop
+
 inputFile.close
 outputfile.close
 
-private function getInstallPath(exeName, regString)
-    'ãƒ¬ã‚¸ã‚¹ãƒˆãƒªã¸ã‚¢ã‚¯ã‚»ã‚¹ã—ã¦ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹ã€‚
-    'å–å¾—ã§ããªã‹ã£ãŸå ´åˆã¯install_pathã¯ç©ºç™½
+Private Function GetInstallPath(exeName, regString)
+    'ƒŒƒWƒXƒgƒŠ‚ÖƒAƒNƒZƒX‚µ‚ÄƒCƒ“ƒXƒg[ƒ‹ƒpƒX‚ðŽæ“¾‚·‚éB
+    'Žæ“¾‚Å‚«‚È‚©‚Á‚½ê‡‚ÍinstallPath‚Í‹ó”’
     dim workInstallPath
     on error resume next
-        workInstallPath = CreateObject("WScript.Shell").regRead(regString)
+        workInstallPath = CreateObject("WScript.Shell").RegRead(regString)
     on error goto 0
 
-    'ãƒ¬ã‚¸ã‚¹ãƒˆãƒªã‹ã‚‰å–å¾—ã—ãŸãƒ‘ã‚¹ã«ãƒ•ã‚¡ã‚¤ãƒ«åã‚’çµåˆã™ã‚‹ã€‚
-    if len(trime(workInstallPath)) > 0 then
-        if right(workInstallPath, 1)<> chrw(92) then
+    'ƒŒƒWƒXƒgƒŠ‚©‚çŽæ“¾‚µ‚½ƒpƒX‚Éƒtƒ@ƒCƒ‹–¼‚ðŒ‹‡‚·‚éB
+    If Len(Trim(workInstallPath)) > 0 Then
+        If Right(workInstallPath, 1)<> chrw(92) Then
             workInstallPath = workInstallPath & chrw(92) & exeName
-        else
+        Else
             workInstallPath = workInstallPath & exeName
-        end if
-    end if
+        End If
+    End If
 
-    getInstallPath = workInstallPath
-end function
+    GetInstallPath = workInstallPath
+End Function
