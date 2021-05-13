@@ -1,0 +1,6 @@
+# ExcelPageSettingsGetter.ps1
+ExcelPageSettingsGetterはファイルのページ設定を取得するためのPowerShellスクリプトです。
+多数のExcelでページ設定が統一されているか確認をするために作りました。
+
+## 処理概要
+整理中
