@@ -8,15 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 @RestController
 public class DemoApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(DemoApplication.class, args);
+	}
 
 	@RequestMapping("/")
 	public String home() {
-		var message = "Hello Spring-Boot<br>This Massage is output from DemoApplication.java#home()";
-
-		return message;
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
+		return "HelloWorld";
 	}
 }
